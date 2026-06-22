@@ -838,3 +838,8 @@ mongoose
     await seed();
     app.listen(PORT, () => console.log(`Freezone API running on http://localhost:${PORT} with memory storage`));
   });
+
+
+app.get("/",(req,res)=>{
+  res.send("Api working Well")
+})
