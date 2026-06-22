@@ -10,7 +10,7 @@ require("dotenv").config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:3000";
-const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/freezone_restaurant";
+const MONGO_URI = process.env.MONGO_URI || "mongodb+srv://kingbonheurkb_db_user:SAosi48treY4jWst@cluster0.htdv3y2.mongodb.net/?appName=Cluster0";
 let dbReady = false;
 
 app.use(cors({ origin: CLIENT_URL, credentials: true }));
