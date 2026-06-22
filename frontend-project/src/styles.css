@@ -1,0 +1,370 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--primary-dark, #071812);
+  overflow: hidden;
+}
+
+.app-shell {
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--primary, #0d3d2d) 35%, transparent), transparent 34%),
+    linear-gradient(180deg, color-mix(in srgb, var(--primary, #0d3d2d) 55%, #000) 0%, var(--primary-dark, #071812) 48%, #101612 100%);
+}
+
+.content-fade {
+  animation: contentFade 220ms ease-out;
+}
+
+.app-body {
+  overflow: hidden;
+}
+
+.app-main {
+  height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.app-sidebar {
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 50;
+  width: min(82vw, 18rem);
+  border-right: 1px solid #065f46;
+  background-color: color-mix(in srgb, var(--primary, #0d3d2d) 95%, #000 5%);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.36);
+  color: #fff;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0.75rem;
+  transform: translateX(-100%);
+  transition: transform 180ms ease, width 180ms ease, padding 180ms ease;
+}
+
+.app-sidebar.sidebar-expanded {
+  transform: translateX(0);
+}
+
+.sidebar-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  background: rgba(0, 0, 0, 0.42);
+}
+
+@keyframes contentFade {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.nav-item {
+  @apply mb-1 flex w-full items-center gap-3 rounded-md px-3 py-3 text-left text-sm font-semibold text-emerald-50 transition hover:bg-emerald-900;
+  min-height: 48px;
+}
+
+.nav-item.active {
+  background-color: var(--accent, #d7aa48) !important;
+  @apply text-zinc-950 shadow-md;
+}
+
+.field {
+  @apply min-h-11 rounded-md border border-emerald-700 bg-emerald-950 px-3 py-2 text-sm text-white outline-none transition placeholder:text-emerald-200 focus:border-gold focus:ring-2 focus:ring-amber-200;
+}
+
+.btn-primary {
+  background-color: var(--accent, #d7aa48) !important;
+  @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-bold text-zinc-950 shadow-sm transition hover:-translate-y-0.5 disabled:translate-y-0 disabled:cursor-not-allowed disabled:bg-zinc-400;
+}
+
+.btn-soft {
+  background-color: color-mix(in srgb, var(--primary, #0d3d2d) 78%, #000) !important;
+  @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5;
+}
+
+.add-button {
+  min-height: 60px;
+  border: 1px solid color-mix(in srgb, var(--primary, #0d3d2d) 70%, #000);
+}
+
+.add-button:hover,
+.add-button:focus-visible {
+  background-color: var(--accent, #d7aa48) !important;
+  color: #111827 !important;
+  transform: translateY(-3px) scale(1.01);
+  box-shadow: 0 16px 28px rgba(0, 0, 0, 0.28);
+}
+
+.add-button:hover svg,
+.add-button:focus-visible svg {
+  stroke-width: 3;
+}
+
+.btn-gold {
+  background-color: var(--accent, #d7aa48) !important;
+  @apply inline-flex min-h-11 items-center justify-center rounded-md px-5 py-3 text-sm font-black text-zinc-950 shadow-sm transition hover:-translate-y-0.5;
+}
+
+.icon {
+  @apply inline-flex h-10 w-10 items-center justify-center rounded-md transition hover:bg-emerald-900;
+}
+
+.topbar-icon:hover,
+.topbar-logo:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent, #d7aa48) 45%, transparent);
+}
+
+.topbar-logo {
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.icon-danger {
+  @apply inline-flex h-11 w-11 items-center justify-center rounded-md bg-red-50 text-red-700 hover:bg-red-100;
+}
+
+.section-title {
+  @apply text-2xl font-black text-white;
+}
+
+.bg-white {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--primary, #0d3d2d) 92%, #fff 8%), color-mix(in srgb, var(--primary, #0d3d2d) 80%, #000 20%)) !important;
+  color: #fff !important;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.18);
+}
+
+.bg-moss,
+.bg-moss\/95 {
+  background-color: color-mix(in srgb, var(--primary, #0d3d2d) 95%, #000 5%) !important;
+}
+
+.bg-gold,
+.text-gold {
+  color: var(--accent, #d7aa48) !important;
+}
+
+.bg-gold {
+  background-color: var(--accent, #d7aa48) !important;
+  color: #111827 !important;
+}
+
+.border-gold {
+  border-color: var(--accent, #d7aa48) !important;
+}
+
+.bg-zinc-50,
+.bg-zinc-100 {
+  background-color: color-mix(in srgb, var(--primary, #0d3d2d) 82%, #000 18%) !important;
+  color: #fff !important;
+}
+
+.border-zinc-200,
+.border-zinc-300 {
+  border-color: #047857 !important;
+}
+
+.text-ink,
+.text-zinc-500,
+.text-zinc-600,
+.text-zinc-700,
+.text-zinc-800 {
+  color: #ecfdf5 !important;
+}
+
+.text-clay {
+  color: #f6d477 !important;
+}
+
+.bg-amber-100 {
+  background-color: #d7aa48 !important;
+  color: #111827 !important;
+}
+
+.border-t {
+  border-color: #047857 !important;
+}
+
+thead.bg-zinc-100 {
+  background-color: color-mix(in srgb, var(--primary, #0d3d2d) 72%, #000 28%) !important;
+}
+
+.mobile-tab {
+  @apply flex min-h-14 flex-col items-center justify-center gap-1 rounded-md text-[11px] font-bold text-emerald-100 transition;
+}
+
+.mobile-tab.active {
+  background-color: var(--accent, #d7aa48) !important;
+  @apply text-zinc-950;
+}
+
+.gallery-media-button {
+  display: block;
+  width: 100%;
+  cursor: zoom-in;
+  background: color-mix(in srgb, var(--primary, #0d3d2d) 84%, #000 16%);
+  text-align: left;
+}
+
+.gallery-media-button img,
+.gallery-media-button video {
+  transition: opacity 160ms ease, transform 180ms ease;
+}
+
+.gallery-media-button:hover img,
+.gallery-media-button:hover video,
+.gallery-media-button:focus-visible img,
+.gallery-media-button:focus-visible video {
+  opacity: 0.86;
+  transform: scale(1.02);
+}
+
+.media-viewer {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.82);
+  padding: 1rem;
+}
+
+.media-viewer-panel {
+  position: relative;
+  width: min(1100px, 96vw);
+  max-height: 92vh;
+}
+
+.media-viewer-content {
+  display: block;
+  max-height: 84vh;
+  width: 100%;
+  border: 1px solid #047857;
+  border-radius: 8px;
+  background: #020617;
+  object-fit: contain;
+}
+
+.media-viewer-title {
+  margin-top: 0.75rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.media-viewer-close {
+  position: absolute;
+  right: 0.75rem;
+  top: 0.75rem;
+  z-index: 1;
+  display: inline-flex;
+  height: 2.75rem;
+  width: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.68);
+  color: #fff;
+  transition: background 160ms ease;
+}
+
+.media-viewer-close:hover,
+.media-viewer-close:focus-visible {
+  background: rgba(4, 120, 87, 0.95);
+}
+
+article.bg-white,
+section.bg-white,
+form.bg-white,
+aside.bg-white {
+  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+
+article.bg-white:hover {
+  transform: translateY(-2px);
+  border-color: #d7aa48 !important;
+}
+
+.stock-status {
+  @apply inline-flex rounded-md px-2 py-1 text-xs font-black;
+}
+
+.stock-status.in-stock {
+  @apply bg-emerald-100 text-emerald-900;
+}
+
+.stock-status.low-stock {
+  @apply bg-amber-100 text-zinc-950;
+}
+
+.stock-status.out-of-stock {
+  @apply bg-red-100 text-red-800;
+}
+
+table {
+  min-width: 680px;
+}
+
+iframe {
+  max-width: 100%;
+}
+
+@media (min-width: 768px) {
+  .app-sidebar {
+    position: relative;
+    z-index: 20;
+    flex: 0 0 auto;
+    height: 100%;
+    transform: translateX(0);
+  }
+
+  .app-sidebar.sidebar-mini {
+    width: 5.5rem;
+    padding-inline: 0.5rem;
+  }
+
+  .sidebar-mini .sidebar-card,
+  .sidebar-mini .nav-label {
+    display: none;
+  }
+
+  .sidebar-mini .nav-item {
+    justify-content: center;
+    min-height: 64px;
+    padding-inline: 0;
+  }
+
+  .sidebar-mini .nav-item svg {
+    height: 24px;
+    width: 24px;
+  }
+
+  .sidebar-scrim {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .section-title {
+    @apply text-xl;
+  }
+
+  .btn-primary,
+  .btn-soft,
+  .btn-gold {
+    @apply w-full px-3;
+  }
+
+  .field {
+    @apply w-full;
+  }
+}
