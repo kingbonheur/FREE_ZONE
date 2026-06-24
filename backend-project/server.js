@@ -5,7 +5,6 @@ const session = require("express-session");
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const multer = require("multer");
-const MongoStore = require("connect-mongo");
 require("dotenv").config();
 
 const app = express();
@@ -17,27 +16,13 @@ let dbReady = false;
 app.use(cors({ origin: CLIENT_URL, credentials: true }));
 app.use(express.json());
 app.use("/uploads", express.static(path.join(__dirname, "..", "uploads")));
-
-
 app.use(
   session({
     name: "freezone.sid",
-    secret: process.env.SESSION_SECRET,
-
+    secret: process.env.NODE_ENV == "development",
     resave: false,
     saveUninitialized: false,
-
-    store: MongoStore.create({
-      mongoUrl: process.env.MONGO_URI || "mongodb+srv://kingbonheurkb_db_user:SAosi48treY4jWst@cluster0.htdv3y2.mongodb.net/?appName=Cluster0",
-      collectionName: "sessions"
-    }),
-
-    cookie: {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 1000 * 60 * 60 * 8
-    }
+    cookie: { httpOnly: true, sameSite: "lax", secure: false, maxAge: 1000 * 60 * 60 * 8 }
   })
 );
 
