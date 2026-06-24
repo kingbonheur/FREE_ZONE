@@ -9,6 +9,6 @@ export const api = axios.create({
 
 export function assetUrl(path) {
   if (!path) return "";
-  if (path.startsWith("http") || path.startsWith("/assets") || path.startsWith("/src")) return path;
+  if (path.startsWith("https://") || path.startsWith("/assets") || path.startsWith("/src")) return path;
   return `${API_URL}${path}`;
 }
