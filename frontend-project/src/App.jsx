@@ -281,20 +281,12 @@ function OrderPage({ cart, setCart, info }) {
   const whatsappGroupLink = "https://chat.whatsapp.com/FVCBp8o97Q10gNDT2vSp7i";
   const shareToGroup = () => {
     if (!cart.length) return;
+    // Copy cart message to clipboard
     if (window.navigator && window.navigator.clipboard) {
       window.navigator.clipboard.writeText(orderGroupText).catch(() => {});
     }
-    const encoded = encodeURIComponent(orderGroupText);
-    const nativeUrl = `whatsapp://send?text=${encoded}`;
-    const webUrl = `https://web.whatsapp.com/send?text=${encoded}`;
-
-    // Try opening native app first. If blocked/failed, fall back to WhatsApp Web, then to group invite.
-    const win = window.open(nativeUrl, "_blank");
-    if (win) return;
-    setTimeout(() => {
-      const webWin = window.open(webUrl, "_blank", "noopener,noreferrer");
-      if (!webWin) window.open(whatsappGroupLink, "_blank", "noopener,noreferrer");
-    }, 600);
+    // Open WhatsApp group directly
+    window.open(whatsappGroupLink, "_blank", "noopener,noreferrer");
   };
 
   return (
