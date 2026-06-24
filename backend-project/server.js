@@ -1,8 +1,8 @@
 const path = require("path");
 const express = require("express");
 const cors = require("cors");
-const session = require("express-session");
 const mongoose = require("mongoose");
+const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const multer = require("multer");
 require("dotenv").config();
@@ -11,20 +11,12 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const CLIENT_URL = process.env.CLIENT_URL || "https://freezonebar.vercel.app";
 const MONGO_URI = process.env.MONGO_URI || "mongodb+srv://kingbonheurkb_db_user:SAosi48treY4jWst@cluster0.htdv3y2.mongodb.net/?appName=Cluster0";
+const JWT_SECRET = process.env.JWT_SECRET || "supersecret";
 let dbReady = false;
 
 app.use(cors({ origin: CLIENT_URL, credentials: true }));
 app.use(express.json());
 app.use("/uploads", express.static(path.join(__dirname, "..", "uploads")));
-app.use(
-  session({
-    name: "freezone.sid",
-    secret: process.env.NODE_ENV == "development",
-    resave: false,
-    saveUninitialized: false,
-    cookie: { httpOnly: true, sameSite: "lax", secure: false, maxAge: 1000 * 60 * 60 * 8 }
-  })
-);
 
 const menuSchema = new mongoose.Schema(
   {
@@ -244,12 +236,24 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
+function decodeToken(req) {
+  const authHeader = req.headers.authorization || req.headers.Authorization;
+  if (!authHeader || !authHeader.startsWith("Bearer ")) return null;
+  const token = authHeader.split(" ")[1];
+  try {
+    return jwt.verify(token, JWT_SECRET);
+  } catch {
+    return null;
+  }
+}
 function auth(req, res, next) {
-  if (!req.session.user) return res.status(401).json({ message: "Login required" });
+  const user = decodeToken(req);
+  if (!user) return res.status(401).json({ message: "Login required" });
+  req.user = user;
   next();
 }
 function admin(req, res, next) {
-  if (!req.session.user || req.session.user.role !== "admin") return res.status(403).json({ message: "Admin access required" });
+  if (!req.user || req.user.role !== "admin") return res.status(403).json({ message: "Admin access required" });
   next();
 }
 function clean(doc) {
@@ -618,7 +622,7 @@ async function findOrderById(id) {
 }
 
 function canManageOrder(req, order) {
-  return req.session.user?.role === "admin" || String(order?.orderedBy || "") === String(req.session.user?.id || "");
+  return req.user?.role === "admin" || String(order?.orderedBy || "") === String(req.user?.id || "");
 }
 
 async function seed() {
@@ -644,11 +648,12 @@ app.post("/api/auth/login", async (req, res) => {
   const users = dbReady ? [await Models.User.findOne({ username })] : memory.User.filter((user) => user.username === username);
   const user = users[0];
   if (!user || !(await bcrypt.compare(password, user.passwordHash))) return res.status(401).json({ message: "Invalid username or password" });
-  req.session.user = { id: String(user._id), username: user.username, name: user.name, role: user.role, phone: user.phone };
-  res.json(req.session.user);
+  const payload = { id: String(user._id), username: user.username, name: user.name, role: user.role, phone: user.phone };
+  const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "8h" });
+  res.json({ user: payload, token });
 });
-app.post("/api/auth/logout", (req, res) => req.session.destroy(() => res.json({ ok: true })));
-app.get("/api/auth/me", (req, res) => res.json(req.session.user || null));
+app.post("/api/auth/logout", (_req, res) => res.json({ ok: true }));
+app.get("/api/auth/me", auth, (req, res) => res.json(req.user || null));
 
 app.get("/api/users", admin, async (_req, res) => {
   const users = dbReady ? await Models.User.find().sort({ createdAt: -1 }) : memory.User;
@@ -706,16 +711,16 @@ app.delete("/api/employees/:id", admin, async (req, res) => res.json({ ok: Boole
 
 app.get("/api/orders", auth, async (req, res) => {
   const orders = await list("Order");
-  if (req.session.user.role === "admin") return res.json(orders);
-  return res.json(orders.filter((order) => String(order.orderedBy || "") === String(req.session.user.id || "")));
+  if (req.user.role === "admin") return res.json(orders);
+  return res.json(orders.filter((order) => String(order.orderedBy || "") === String(req.user.id || "")));
 });
 app.post("/api/orders", async (req, res) => {
   const items = normalizeOrderItems(req.body.items || []);
   if (!items.length) return res.status(400).json({ message: "Add at least one item before placing the order." });
   try {
     const stockMovements = await reserveOrderStock(items);
-    const orderedBy = req.session.user?.id;
-    const orderedByName = req.session.user?.name || "Online customer";
+    const orderedBy = req.user?.id;
+    const orderedByName = req.user?.name || "Online customer";
     res.status(201).json(await create("Order", {
       customerName: req.body.customerName,
       phone: req.body.phone,
@@ -762,7 +767,7 @@ app.post("/api/orders/:id/receipt", auth, async (req, res) => {
   if (!existing) return res.status(404).json({ message: "Order not found" });
   if (!canManageOrder(req, existing)) return res.status(403).json({ message: "You can only manage orders you created." });
   const paymentMethod = req.body.paymentMethod || existing.paymentMethod || "Cash";
-  const receipt = buildReceipt(existing, paymentMethod, req.session.user?.name || "Admin");
+  const receipt = buildReceipt(existing, paymentMethod, req.user?.name || "Admin");
   res.json(await update("Order", req.params.id, {
     status: "Paid",
     paidAt: receipt.issuedAt,
@@ -838,8 +843,3 @@ mongoose
     await seed();
     app.listen(PORT, () => console.log(`Freezone API running on http://localhost:${PORT} with memory storage`));
   });
-
-
-app.get("/",(req,res)=>{
-  res.send("Api working Well")
-})

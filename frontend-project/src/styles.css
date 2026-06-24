@@ -92,6 +92,13 @@ body {
   @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5;
 }
 
+.btn-secondary {
+  background-color: rgba(15, 151, 120, 0.15) !important;
+  color: #0f7868 !important;
+  border: 1px solid rgba(15, 151, 120, 0.35);
+  @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-bold shadow-sm transition hover:bg-emerald-100;
+}
+
 .add-button {
   min-height: 60px;
   border: 1px solid color-mix(in srgb, var(--primary, #0d3d2d) 70%, #000);

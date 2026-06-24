@@ -277,6 +277,26 @@ function OrderPage({ cart, setCart, info }) {
     }
   };
   const orderText = `Hello Freezone, my order total is ${total.toLocaleString()} RWF: ${cart.map((item) => `${item.quantity}x ${item.name}`).join(", ")}`;
+  const orderGroupText = `Hello team, I would like to send this cart to the group: ${cart.map((item) => `${item.quantity}x ${item.name}`).join(", ")}. Total: ${total.toLocaleString()} RWF.`;
+  const whatsappGroupLink = "https://chat.whatsapp.com/FVCBp8o97Q10gNDT2vSp7i";
+  const shareToGroup = () => {
+    if (!cart.length) return;
+    if (window.navigator && window.navigator.clipboard) {
+      window.navigator.clipboard.writeText(orderGroupText).catch(() => {});
+    }
+    const encoded = encodeURIComponent(orderGroupText);
+    const nativeUrl = `whatsapp://send?text=${encoded}`;
+    const webUrl = `https://web.whatsapp.com/send?text=${encoded}`;
+
+    // Try opening native app first. If blocked/failed, fall back to WhatsApp Web, then to group invite.
+    const win = window.open(nativeUrl, "_blank");
+    if (win) return;
+    setTimeout(() => {
+      const webWin = window.open(webUrl, "_blank", "noopener,noreferrer");
+      if (!webWin) window.open(whatsappGroupLink, "_blank", "noopener,noreferrer");
+    }, 600);
+  };
+
   return (
     <div className="grid gap-5 lg:grid-cols-[1.2fr_.8fr]">
       <form onSubmit={submit} className="rounded-md border border-zinc-200 bg-white p-5">
@@ -299,7 +319,12 @@ function OrderPage({ cart, setCart, info }) {
           {cart.map((item) => <div key={item.id} className="flex justify-between rounded-md bg-zinc-50 p-3 text-sm"><span>{item.quantity}x {item.name}</span><b>{(item.price * item.quantity).toLocaleString()} RWF</b></div>)}
         </div>
         <div className="mt-4 flex items-center justify-between border-t pt-4 font-bold"><span>Total</span><span>{total.toLocaleString()} RWF</span></div>
-        <div className="mt-4"><WhatsAppButton text="Send Cart on WhatsApp" order={orderText} info={info} /></div>
+        <div className="mt-4 flex flex-col gap-3">
+          <WhatsAppButton text="Send Cart on WhatsApp" order={orderText} info={info} />
+          <button type="button" className="btn-secondary w-full" onClick={shareToGroup} disabled={!cart.length}>
+            Send Cart to WhatsApp Group
+          </button>
+        </div>
         <p className="mt-3 text-sm text-zinc-500">Support: {info.phone}</p>
       </aside>
     </div>
@@ -723,7 +748,10 @@ function AccountPage({ user, setUser, setPage }) {
     setMessage("");
     try {
       const { data } = await api.post("/auth/login", form);
-      setUser(data);
+      const authUser = data.user || data;
+      localStorage.setItem("freezone_user", JSON.stringify(authUser));
+      localStorage.setItem("freezone_token", data.token);
+      setUser(authUser);
       setForm({ username: "", password: "" });
     } catch (error) {
       setMessage(error.response?.data?.message || "Login failed. Check username and password.");
@@ -731,6 +759,8 @@ function AccountPage({ user, setUser, setPage }) {
   };
   const logout = async () => {
     await api.post("/auth/logout");
+    localStorage.removeItem("freezone_user");
+    localStorage.removeItem("freezone_token");
     setUser(null);
   };
   if (user) {
@@ -1191,7 +1221,20 @@ function App() {
   useEffect(() => {
     loadMenu();
     api.get("/info").then((res) => setInfo(res.data));
-    api.get("/auth/me").then((res) => setUser(res.data));
+    const storedUser = typeof window !== "undefined" ? localStorage.getItem("freezone_user") : null;
+    const storedToken = typeof window !== "undefined" ? localStorage.getItem("freezone_token") : null;
+    if (storedToken) {
+      if (storedUser) setUser(JSON.parse(storedUser));
+      api.get("/auth/me").then((res) => setUser(res.data)).catch(() => {
+        localStorage.removeItem("freezone_user");
+        localStorage.removeItem("freezone_token");
+        setUser(null);
+      });
+    } else {
+      if (storedUser) {
+        localStorage.removeItem("freezone_user");
+      }
+    }
   }, []);
   useEffect(() => {
     if (!availablePages.includes(page)) setPage(user ? "Food Menu" : "Home");
