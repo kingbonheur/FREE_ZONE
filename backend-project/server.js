@@ -187,7 +187,7 @@ const defaultInfo = {
   name: "Freezone Bar & Restaurant",
   location: "Gikondo, Near Magerwa, Kigali, Rwanda",
   phone: "+250 788 306 365",
-  whatsapp: "250788306365",
+  whatsapp: "250792897666",
   email: "smartboxltd@gmail.com",
   hours: "Monday - Sunday, 10:00 AM - 11:30 PM",
   about:
