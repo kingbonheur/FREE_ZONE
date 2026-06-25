@@ -313,7 +313,7 @@ function OrderPage({ cart, setCart, info }) {
         <div className="mt-4 flex items-center justify-between border-t pt-4 font-bold"><span>Total</span><span>{total.toLocaleString()} RWF</span></div>
         <div className="mt-4 flex flex-col gap-3">
           {/* <WhatsAppButton text="Send Cart on WhatsApp" order={orderText} info={info} /> */}
-          <button type="button" className="btn-secondary w-full" onClick={shareToGroup} disabled={!cart.length}>
+          <button type="button" className="btn-primary w-full" onClick={shareToGroup} disabled={!cart.length}>
             Send Cart to WhatsApp Group
           </button>
         </div>
