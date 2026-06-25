@@ -74,7 +74,7 @@ function navForUser(user) {
 }
 
 function whatsappNumber(value) {
-  return String(value || "250792897666").replace(/\D/g, "");
+  return String("250792897666").replace(/\D/g, "");
 }
 
 function themeStyle(info = {}) {
