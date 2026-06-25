@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 5000;
 const CLIENT_URL = process.env.CLIENT_URL || "https://freezonebar.vercel.app";
 const MONGO_URI =
   process.env.MONGO_URI ||
-  "mongodb+srv://kingbonheurkb_db_user:SAosi48treY4jWst@cluster0.htdv3y2.mongodb.net/?appName=Cluster0";
+  "mongodb+srv://kingbonheurkb_db_user:SAosi48treY4jWst@cluster0.htdv3y2.mongodb.net/freezon_db";
 const JWT_SECRET = process.env.JWT_SECRET || "supersecret";
 let dbReady = false;
 
